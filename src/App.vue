@@ -5,8 +5,30 @@ import Header from './components/Header.vue'
 import Dashboard from './views/Dashboard.vue'
 import TeachingSupervisionList from './views/TeachingSupervisionList.vue'
 import ClassroomPatrol from './views/ClassroomPatrol.vue'
+import TemplateManagement from './views/TemplateManagement.vue'
+import CategoryManagement from './views/CategoryManagement.vue'
+import IndicatorManagement from './views/IndicatorManagement.vue'
+import OptionManagement from './views/OptionManagement.vue'
+import EvaluationReport from './views/EvaluationReport.vue'
+import EvaluationRecord from './views/EvaluationRecord.vue'
+import PatrolRecord from './views/PatrolRecord.vue'
+import PatrolData from './views/PatrolData.vue'
+import MessageRecord from './views/MessageRecord.vue'
+import TeachingReplay from './views/TeachingReplay.vue'
+import VideoPlayback from './views/VideoPlayback.vue'
 
 const activeNav = ref('教学督导')
+const videoParams = ref<any>(null)
+
+const handleNavigateVideo = (params: any) => {
+  videoParams.value = params
+  activeNav.value = '教学录像'
+}
+
+const handleBackFromVideo = () => {
+  videoParams.value = null
+  activeNav.value = '教学回看'
+}
 
 const DESIGN_WIDTH = 1920
 const DESIGN_HEIGHT = 1080
@@ -77,6 +99,17 @@ onBeforeUnmount(() => {
             <el-main>
               <TeachingSupervisionList v-if="activeNav === '教学督导'" />
               <ClassroomPatrol v-else-if="activeNav === '教室巡课'" />
+              <EvaluationReport v-else-if="activeNav === '评价报表'" />
+              <EvaluationRecord v-else-if="activeNav === '评价记录'" />
+              <TemplateManagement v-else-if="activeNav === '模板管理'" />
+              <IndicatorManagement v-else-if="activeNav === '指标管理'" />
+              <CategoryManagement v-else-if="activeNav === '分类管理'" />
+              <OptionManagement v-else-if="activeNav === '选项管理'" />
+              <PatrolRecord v-else-if="activeNav === '巡课记录'" />
+              <PatrolData v-else-if="activeNav === '巡视数据'" />
+              <MessageRecord v-else-if="activeNav === '留言记录'" />
+              <TeachingReplay v-else-if="activeNav === '教学回看'" @navigate-video="handleNavigateVideo" />
+              <VideoPlayback v-else-if="activeNav === '教学录像'" :params="videoParams" @navigate="handleBackFromVideo" />
               <Dashboard v-else-if="activeNav === '首页'" />
               <Dashboard v-else />
             </el-main>
@@ -109,6 +142,14 @@ html, body, #app {
 
 body {
   background: url('/bg.png') center / cover no-repeat #0a1628;
+}
+
+body.ranking-dialog-open .viewport-frame {
+  overflow: hidden !important;
+}
+
+body.ranking-dialog-open .el-main {
+  overflow: hidden !important;
 }
 </style>
 

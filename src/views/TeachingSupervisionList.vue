@@ -310,6 +310,23 @@ const tableData = computed<Row[]>(() => {
   return inClassData
 })
 
+const hasData = computed(() => {
+  if (activeTab.value !== 'all') return true
+  const range = courseDate.value
+  if (!range || !range[0] || !range[1]) return true
+  const toStr = (d: Date) => {
+    const y = d.getFullYear()
+    const m = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${y}-${m}-${day}`
+  }
+  const start = toStr(range[0])
+  const end = toStr(range[1])
+  return start <= '2026-06-30' && end >= '2026-06-01'
+})
+
+const displayedData = computed<Row[]>(() => (hasData.value ? tableData.value : []))
+
 const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(156)
@@ -469,7 +486,8 @@ function onReset() {
 
       <div v-if="viewMode === 'list'" class="table-wrapper">
         <el-table
-          :data="tableData"
+          v-if="hasData"
+          :data="displayedData"
           style="width: 100%"
           row-key="id"
           :header-cell-style="{ background: 'rgba(255,255,255,0.6)', color: 'rgba(0,0,0,0.88)', fontWeight: 500 }"
@@ -526,6 +544,10 @@ function onReset() {
             </template>
           </el-table-column>
         </el-table>
+        <div v-else class="empty-state">
+          <img src="/empty-data.png" alt="" class="empty-icon" />
+          <p class="empty-text">暂无数据</p>
+        </div>
       </div>
 
       <div v-if="viewMode === 'schedule'" class="schedule-view">
@@ -582,7 +604,7 @@ function onReset() {
         </div>
       </div>
 
-      <div v-if="viewMode === 'list'" class="pagination-wrapper">
+      <div v-if="viewMode === 'list' && hasData" class="pagination-wrapper">
         <el-pagination
           v-model:current-page="currentPage"
           v-model:page-size="pageSize"
@@ -599,6 +621,30 @@ function onReset() {
 <style scoped>
 .teaching-supervision-list {
   width: 100%;
+}
+
+.empty-state {
+  flex: 1;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 60px;
+}
+
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  display: block;
+}
+
+.empty-text {
+  font-size: 14px;
+  color: #191c1e;
+  line-height: 20px;
+  margin: 0;
 }
 
 .card {
